@@ -17,9 +17,11 @@
   /* If input fields are populated, add a row to the EMPLOYEES table. */
   $employee_name = htmlentities($_POST['NAME']);
   $employee_address = htmlentities($_POST['ADDRESS']);
+  $employee_age = intval($_POST['AGE']);
+  $employee_student = isset($_POST['STUDENT']) ? 1 : 0; // Boolean field
 
-  if (strlen($employee_name) || strlen($employee_address)) {
-    AddEmployee($connection, $employee_name, $employee_address);
+  if (strlen($employee_name) || strlen($employee_address) || $employee_age || $employee_student) {
+    AddEmployee($connection, $employee_name, $employee_address, $employee_age, $employee_student);
   }
 ?>
 
@@ -29,6 +31,8 @@
     <tr>
       <td>NAME</td>
       <td>ADDRESS</td>
+      <td>AGE</td>
+      <td>STUDENT</td>
     </tr>
     <tr>
       <td>
@@ -36,6 +40,12 @@
       </td>
       <td>
         <input type="text" name="ADDRESS" maxlength="90" size="60" />
+      </td>
+      <td>
+        <input type="number" name="AGE" min="0" />
+      </td>
+      <td>
+        <input type="checkbox" name="STUDENT" />
       </td>
       <td>
         <input type="submit" value="Add Data" />
@@ -50,6 +60,8 @@
     <td>ID</td>
     <td>NAME</td>
     <td>ADDRESS</td>
+    <td>AGE</td>
+    <td>STUDENT</td>
   </tr>
 
 <?php
@@ -58,9 +70,11 @@ $result = mysqli_query($connection, "SELECT * FROM EMPLOYEES");
 
 while($query_data = mysqli_fetch_row($result)) {
   echo "<tr>";
-  echo "<td>",$query_data[0], "</td>",
-       "<td>",$query_data[1], "</td>",
-       "<td>",$query_data[2], "</td>";
+  echo "<td>", $query_data[0], "</td>",
+       "<td>", $query_data[1], "</td>",
+       "<td>", $query_data[2], "</td>",
+       "<td>", $query_data[3], "</td>",
+       "<td>", ($query_data[4] ? 'Yes' : 'No'), "</td>";  // Convert boolean to Yes/No
   echo "</tr>";
 }
 ?>
@@ -78,15 +92,16 @@ while($query_data = mysqli_fetch_row($result)) {
 </body>
 </html>
 
-
 <?php
 
 /* Add an employee to the table. */
-function AddEmployee($connection, $name, $address) {
+function AddEmployee($connection, $name, $address, $age, $student) {
    $n = mysqli_real_escape_string($connection, $name);
    $a = mysqli_real_escape_string($connection, $address);
+   $g = intval($age);
+   $s = intval($student);
 
-   $query = "INSERT INTO EMPLOYEES (NAME, ADDRESS) VALUES ('$n', '$a');";
+   $query = "INSERT INTO EMPLOYEES (NAME, ADDRESS, AGE, STUDENT) VALUES ('$n', '$a', $g, $s);";
 
    if(!mysqli_query($connection, $query)) echo("<p>Error adding employee data.</p>");
 }
@@ -98,7 +113,9 @@ function VerifyEmployeesTable($connection, $dbName) {
      $query = "CREATE TABLE EMPLOYEES (
          ID int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
          NAME VARCHAR(45),
-         ADDRESS VARCHAR(90)
+         ADDRESS VARCHAR(90),
+         AGE INT,
+         STUDENT BOOLEAN
        )";
 
      if(!mysqli_query($connection, $query)) echo("<p>Error creating table.</p>");
@@ -117,5 +134,4 @@ function TableExists($tableName, $connection, $dbName) {
 
   return false;
 }
-?>                        
-                
+?>
