@@ -4,6 +4,9 @@
 
 Esta solução configura um servidor web na AWS EC2 usando Amazon Linux, que se conecta a uma instância RDS MariaDB. O servidor executa uma aplicação PHP que interage com um banco de dados MariaDB para gerenciar dados de funcionários.
 
+Vídeo da aplicação:
+https://github.com/user-attachments/assets/99e05bb5-b755-4b4a-84b3-70d8f97e7751
+
 ## Componentes
 
 - **AWS EC2**: Servidor virtual executando Amazon Linux.
